@@ -72,9 +72,10 @@ public class ProjetoServiceImpl implements ProjetoService {
         }
 
         Projeto existente = projetoOpt.get();
-        existente.setNome(dto.getNome());
-        existente.setBudget(dto.getBudget());
-        existente.setCategoria(categoriaMapper.toEntity(dto.getCategoria()));
+        projetoMapper.updateUsuario(dto, existente);
+//        existente.setNome(dto.getNome());
+//        existente.setBudget(dto.getBudget());
+//        existente.setCategoria(categoriaMapper.toEntity(dto.getCategoria()));
 
 
         Projeto atualizado = projetoRepository.save(existente);
