@@ -7,9 +7,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Projeto {
 
     @Id
