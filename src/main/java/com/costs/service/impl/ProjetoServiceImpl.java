@@ -5,7 +5,9 @@ import com.costs.dto.ProjetoResponseDTO;
 import com.costs.exception.ProjetoNotFoundException;
 import com.costs.mapper.CategoriaMapper;
 import com.costs.mapper.ProjetoMapper;
+import com.costs.mapper.ServicoMapper;
 import com.costs.model.Projeto;
+import com.costs.model.Servico;
 import com.costs.repository.ProjetoRepository;
 import com.costs.service.ProjetoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,9 @@ public class ProjetoServiceImpl implements ProjetoService {
 
     @Autowired
     private CategoriaMapper categoriaMapper;
+
+    @Autowired
+    private ServicoMapper servicoMapper;
 
 
     @Override
@@ -77,8 +84,22 @@ public class ProjetoServiceImpl implements ProjetoService {
 //        existente.setBudget(dto.getBudget());
 //        existente.setCategoria(categoriaMapper.toEntity(dto.getCategoria()));
 
+        if (dto.getServicos() != null) {
+            List<Servico> servicos = dto.getServicos().stream()
+                    .map(servicoMapper::toEntity)
+                    .collect(Collectors.toList());
+            // Se tiver o campo projeto em Servico
+            servicos.forEach(servico -> servico.setProjeto(existente));
+
+            existente.getServicos().clear();
+            existente.getServicos().addAll(servicos); // ← Agora está certo
+
+        }
+
+        atualizarCustoTotalProjeto(existente);
 
         Projeto atualizado = projetoRepository.save(existente);
+
         return new ResponseEntity<>(projetoMapper.toDTO(atualizado), HttpStatus.OK) ;
 
     }
@@ -92,6 +113,15 @@ public class ProjetoServiceImpl implements ProjetoService {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    private void atualizarCustoTotalProjeto(Projeto projeto) {
+        BigDecimal custoTotal = projeto.getServicos().stream()
+                .map(Servico::getValor)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        projeto.setCost(custoTotal);
     }
 
 }

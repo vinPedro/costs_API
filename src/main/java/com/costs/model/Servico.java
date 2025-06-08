@@ -18,4 +18,8 @@ public class Servico {
     private String nome;
     private String descricao;
     private BigDecimal valor;
+
+    @ManyToOne
+    @JoinColumn(name = "projeto_id")
+    private Projeto projeto;
 }

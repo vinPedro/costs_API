@@ -9,5 +9,5 @@ public class ServicoRequestDTO {
 
     private String nome;
     private String descricao;
-    private BigDecimal cost;
+    private BigDecimal valor;
 }

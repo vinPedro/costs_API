@@ -10,5 +10,5 @@ public class ServicoResponseDTO {
     private Long id;
     private String nome;
     private String descricao;
-    private BigDecimal cost;
+    private BigDecimal valor;
 }
